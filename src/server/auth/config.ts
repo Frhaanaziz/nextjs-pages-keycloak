@@ -1,8 +1,6 @@
 import { env } from "@/env";
 import { logoutRequest, refreshTokenRequest } from "@/server/auth/oidc";
-import type { Account, AuthOptions, User } from "next-auth";
 import { type NextAuthOptions } from "next-auth";
-import { JWT } from "next-auth/jwt";
 import KeycloakProvider from "next-auth/providers/keycloak";
 
 type UserType = {
