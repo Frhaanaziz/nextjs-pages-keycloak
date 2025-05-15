@@ -15,17 +15,21 @@ export function decrypt(encryptedString: string) {
   return text;
 }
 
-export function extractEthereumAddress(did?: string) {
-  if (!did) return;
+export function normalizeEthereumAddress(input?: string) {
+  if (!input) return;
 
-  // Validasi awal: apakah string sesuai pola umum
-  const regex = /^eip155:\d+:(0x[a-fA-F0-9]{40})$/;
+  const ethAddressRegex = /^0x[a-fA-F0-9]{40}$/;
+  const didRegex = /^eip155:\d+:(0x[a-fA-F0-9]{40})$/;
 
-  const match = did.match(regex);
-  if (match) {
-    return match[1]; // group ke-1 adalah alamat Ethereum (0x...)
-  } else {
-    console.error("Invalid DID format:", did);
-    return; // atau bisa throw error jika ingin
+  if (ethAddressRegex.test(input)) {
+    // Sudah berbentuk address Ethereum
+    return input;
   }
+
+  const match = input.match(didRegex);
+  if (match) {
+    return match[1]; // Ambil address dari DID
+  }
+
+  return; // Tidak valid
 }
