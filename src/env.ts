@@ -7,16 +7,13 @@ export const env = createEnv({
    * isn't built with invalid env vars.
    */
   server: {
-    NEXTAUTH_SECRET:
-      process.env.NODE_ENV === "production"
-        ? z.string()
-        : z.string().optional(),
+    NEXTAUTH_SECRET: z.string(),
     DATABASE_URL: z.string().url(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
-    KEYCLOAK_CLIENT_ID: z.string().min(1),
-    KEYCLOAK_CLIENT_SECRET: z.string().min(1),
+    KEYCLOAK_CLIENT_ID: z.string(),
+    KEYCLOAK_CLIENT_SECRET: z.string(),
     KEYCLOAK_ISSUER: z.string().url(),
   },
 

@@ -2,11 +2,13 @@ import { env } from "@/env";
 import { logoutRequest, refreshTokenRequest } from "@/server/auth/oidc";
 import { type NextAuthOptions } from "next-auth";
 import KeycloakProvider from "next-auth/providers/keycloak";
+import { encrypt } from "../utils";
 
 type UserType = {
   id: string;
   name: string;
   email: string;
+  walletAddress?: string;
 };
 
 // Declare custom types for NextAuth modules
@@ -15,22 +17,29 @@ declare module "next-auth" {
     user: UserType;
     error?: "RefreshTokenError";
     access_token: string;
+    id_token: string;
   }
 
   interface User {
     id: string;
     name: string;
     email: string;
+    walletAddress?: string;
   }
 
   interface Account {
-    refresh_expires_in?: number;
+    id_token: string;
+  }
+
+  interface Profile {
+    wallet_address?: string;
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
     access_token: string;
+    id_token: string;
     refresh_token: string;
     expires_at: number;
     error?: "RefreshTokenError";
@@ -58,9 +67,9 @@ export const authConfig = {
     },
   },
   callbacks: {
-    async jwt({ token, account, user, trigger, profile }) {
+    async jwt({ token, account, user, profile }) {
       // Handle JWT token creation and refreshing
-      if (account) {
+      if (account && profile) {
         if (
           !account.access_token ||
           !account.refresh_token ||
@@ -73,8 +82,16 @@ export const authConfig = {
         // Update token with account information
         token.access_token = account.access_token;
         token.refresh_token = account.refresh_token;
+        token.id_token = account.id_token;
         token.expires_at = Date.now() + (account.expires_at - 15) * 1000; // 15 seconds before expiration
-        token.user = user;
+        token.user = {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          walletAddress: profile.wallet_address?.startsWith("eip155:1:")
+            ? profile.wallet_address?.slice(9)
+            : profile.wallet_address,
+        };
 
         return token;
       } else if (Date.now() < token.expires_at * 1000) {
@@ -87,14 +104,14 @@ export const authConfig = {
         try {
           // Send a post request to refresh the token
           const { data } = await refreshTokenRequest(token.refresh_token);
-          console.log("Response from refresh token request: ", data);
 
           // Update token with refreshed information
           return {
             ...token,
             access_token: data.access_token,
             expires_at: Math.floor(Date.now() / 1000 + data.expires_in),
-            refresh_token: data.refresh_token ?? token.refresh_token,
+            refresh_token: data.refresh_token,
+            id_token: data.id_token,
           };
         } catch (e: any) {
           console.error("Error refreshing access_token", e.response.data);
@@ -108,7 +125,8 @@ export const authConfig = {
     async session({ session, token }) {
       session.user = token.user;
       session.error = token.error;
-      session.access_token = token.access_token;
+      session.access_token = encrypt(token.access_token);
+      session.id_token = encrypt(token.id_token);
       return session;
     },
   },
