@@ -1,40 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# Next.js + Keycloak Authentication Example
+
+This project demonstrates how to integrate [Next.js](https://nextjs.org/) with [Keycloak](https://www.keycloak.org/) authentication using [NextAuth.js](https://next-auth.js.org/). It provides a secure authentication flow with support for access token refresh and logout.
+
+## Features
+
+- Next.js pages directory structure
+- Keycloak authentication via NextAuth.js
+- Secure token storage (encrypted in session)
+- Automatic token refresh
+- Logout support (calls Keycloak logout endpoint)
+- TypeScript support
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js (18+ recommended)
+- [Keycloak](https://www.keycloak.org/) instance
+- Keycloak client configured for your app
+
+### Environment Variables
+
+Create a `.env.local` file in the root directory and set the following variables:
+
+```env
+NEXTAUTH_SECRET=your_nextauth_secret
+KEYCLOAK_CLIENT_ID=your_keycloak_client_id
+KEYCLOAK_CLIENT_SECRET=your_keycloak_client_secret
+KEYCLOAK_ISSUER=https://your-keycloak-domain/realms/your-realm
+```
+
+### Install Dependencies
+
+```bash
+pnpm install
+```
+
+or
+
+```bash
+npm install
+```
+
+### Development
+
+```bash
+pnpm dev
+```
+
+or
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Build and Start
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm build
+pnpm start
+```
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+or
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+```bash
+npm run build
+npm start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Usage
 
-## Learn More
+- Visit the home page.
+- Click **Signin** to authenticate with Keycloak.
+- After login, your session and tokens will be displayed.
+- Click **Signout** to log out (calls Keycloak logout endpoint).
 
-To learn more about Next.js, take a look at the following resources:
+## Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+- `src/pages/` - Next.js pages (including `/api/auth/[...nextauth].ts`)
+- `src/server/auth/` - Authentication logic and configuration
+- `src/env.ts` - Environment variable validation
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Customization
 
-## Deploy on Vercel
+- Update Keycloak client and realm settings as needed.
+- Extend user/session types in `src/server/auth/config.ts` for custom claims.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## License
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+MIT
