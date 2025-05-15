@@ -7,6 +7,7 @@ export const env = createEnv({
    * isn't built with invalid env vars.
    */
   server: {
+    NEXTAUTH_URL: z.string().url(),
     NEXTAUTH_SECRET: z.string(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
@@ -30,6 +31,7 @@ export const env = createEnv({
    * middlewares) or client-side so we need to destruct manually.
    */
   runtimeEnv: {
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NODE_ENV: process.env.NODE_ENV,
     KEYCLOAK_CLIENT_ID: process.env.KEYCLOAK_CLIENT_ID,
