@@ -128,4 +128,8 @@ export const authConfig = {
       return session;
     },
   },
+  pages: {
+    signIn: "/",
+    error: "/",
+  },
 } satisfies NextAuthOptions;
