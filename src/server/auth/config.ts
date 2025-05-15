@@ -2,7 +2,7 @@ import { env } from "@/env";
 import { logoutRequest, refreshTokenRequest } from "@/server/auth/oidc";
 import { type NextAuthOptions } from "next-auth";
 import KeycloakProvider from "next-auth/providers/keycloak";
-import { encrypt } from "../utils";
+import { encrypt, extractEthereumAddress } from "../utils";
 
 type UserType = {
   id: string;
@@ -88,9 +88,7 @@ export const authConfig = {
           id: user.id,
           name: user.name,
           email: user.email,
-          walletAddress: profile.wallet_address?.startsWith("eip155:1:")
-            ? profile.wallet_address?.slice(9)
-            : profile.wallet_address,
+          walletAddress: extractEthereumAddress(profile.wallet_address),
         };
 
         return token;
