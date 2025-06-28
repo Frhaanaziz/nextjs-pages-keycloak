@@ -2,13 +2,12 @@ import { env } from "@/env";
 import { logoutRequest, refreshTokenRequest } from "@/server/auth/oidc";
 import { type NextAuthOptions } from "next-auth";
 import KeycloakProvider from "next-auth/providers/keycloak";
-import { encrypt, normalizeEthereumAddress } from "../utils";
+import { encrypt } from "../utils";
 
 type UserType = {
   id: string;
   name: string;
   email: string;
-  walletAddress?: string;
 };
 
 // Declare custom types for NextAuth modules
@@ -24,15 +23,10 @@ declare module "next-auth" {
     id: string;
     name: string;
     email: string;
-    walletAddress?: string;
   }
 
   interface Account {
     id_token: string;
-  }
-
-  interface Profile {
-    wallet_address?: string;
   }
 }
 
@@ -88,7 +82,6 @@ export const authConfig = {
           id: user.id,
           name: user.name,
           email: user.email,
-          walletAddress: normalizeEthereumAddress(profile.wallet_address),
         };
 
         return token;
